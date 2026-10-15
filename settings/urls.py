@@ -22,7 +22,7 @@ from apps.users.views import home
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', home, name='home'),
-    path('users/', include('apps.users.urls')),
+    path("admin/", admin.site.urls),
+    path("", home, name="home"),
+    path("users/", include("apps.users.urls")),
 ]

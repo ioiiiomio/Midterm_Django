@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.4.0 - 15.10.2026
+### Added
+- profile page (`/users/profile/`) - shows name, email, role and join date
+- profile edit page (`/users/profile/edit/`) - user can change first and last name only
+- ProfileForm
+- messages block in base.html
+- link to profile in navbar
+
+### Fixed
+- base.html had wrong extension (.htm)
+- imports and blank lines in users views and forms (ruff)
+
 ## 1.3.0 - 15.10.2026
 ### Added
 - register, login and logout pages in users app

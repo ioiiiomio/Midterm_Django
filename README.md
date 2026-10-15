@@ -56,6 +56,8 @@ Pages that work now:
 - http://127.0.0.1:8000/ - home
 - http://127.0.0.1:8000/users/register/ - sign up
 - http://127.0.0.1:8000/users/login/ - login (with email, there is no username)
+- http://127.0.0.1:8000/users/profile/ - my profile (only when logged in)
+- http://127.0.0.1:8000/users/profile/edit/ - edit my name
 - http://127.0.0.1:8000/admin/ - admin
 
 Note: don't run `django-admin startproject`, project is already created.
@@ -64,14 +66,15 @@ Note: don't run `django-admin startproject`, project is already created.
 ```
 apps/
   abstracts/   base model (created_at, updated_at, deleted_at)
-  users/       custom user, register / login / logout
-    templates/users/   login.html, register.html
+  users/       custom user, register / login / logout / profile
+    forms.py   RegisterForm, ProfileForm
+    templates/users/   login.html, register.html, profile.html, profile_edit.html
   events/
   clubs/
   library/
   tutoring/
 templates/
-  base.html    main layout with navbar, extend it in your pages
+  base.html    main layout with navbar and messages, extend it in your pages
   home.html
 settings/
   .env
@@ -125,7 +128,11 @@ Your templates go to `apps/<your_app>/templates/<your_app>/` (yes, app name twic
 {% extends "base.html" %}
 ```
 
-If a page is only for logged in users, use `LoginRequiredMixin` (or `@login_required` for function views). It will send people to the login page automatically.
+If a page is only for logged in users, use `LoginRequiredMixin` (or `@login_required` for function views). It will send people to the login page automatically. Put it first: `class MyView(LoginRequiredMixin, ListView)`.
+
+To show a message after an action (like "Registered for event"), use `SuccessMessageMixin` with `success_message = "..."`. `base.html` already shows messages.
+
+When a user edits his own stuff, take the object from `request.user`, not from the url id, so nobody can edit other people's things.
 
 Add your app urls in `settings/urls.py`:
 ```python
@@ -134,6 +141,12 @@ path("events/", include("apps.events.urls")),
 and put `app_name = "events"` in your `urls.py`.
 
 Logout must be a POST form, not a link (Django 5 thing). There is already a button in `base.html`.
+
+## If something breaks
+- `TemplateDoesNotExist` - check file name and folder (`.html`, not `.htm`, and `templates/<app>/` inside your app)
+- weird old error after you fixed it - stop runserver (Ctrl+C) and start again
+- `'tuple' object has no attribute ...` - you have an extra comma at the end of a line like `model = User,`
+- `No module named 'django'` - venv is not activated
 
 ## Rules
 - don't push to main or dev, make your branch from dev and open PR

@@ -1,24 +1,23 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import ChoiceField
+from django.forms import ChoiceField, ModelForm
 
 from apps.users.models import User
 
 
 class RegisterForm(UserCreationForm):
+    """Sign up form. Admin role can't be chosen here."""
+
     ROLE_CHOICES = (
-    (User.Role.STUDENT, "student"),
-    (User.Role.TUTOR, "tutor"),
+        (User.Role.STUDENT, "Student"),
+        (User.Role.TUTOR, "Tutor"),
     )
 
     role = ChoiceField(
-        required=True,
         choices=ROLE_CHOICES,
     )
 
-    def clean_email(self) -> str:
-        return self.cleaned_data["email"].lower()
-
     class Meta:
+        """Form settings."""
 
         model = User
         fields = (
@@ -26,4 +25,21 @@ class RegisterForm(UserCreationForm):
             "first_name",
             "last_name",
             "role",
+        )
+
+    def clean_email(self) -> str:
+        """Store emails in lowercase."""
+        return self.cleaned_data["email"].lower()
+
+
+class ProfileForm(ModelForm):
+    """Edit own name. Email and role can't be changed here."""
+
+    class Meta:
+        """Form settings."""
+
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
         )

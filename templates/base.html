@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}CampusHub{% endblock %}</title>
 </head>
 <body>
     <nav>
         <a href="{% url 'home' %}">CampusHub</a>
         {% if user.is_authenticated %}
-            <span>{{ user.email }} ({{ user.get_role_display }})</span>
+            <a href="{% url 'users:profile' %}">{{ user.email }}</a> ({{ user.get_role_display }})
             <form method="post" action="{% url 'users:logout' %}" style="display:inline">
                 {% csrf_token %}
                 <button type="submit">Logout</button>
@@ -19,6 +20,11 @@
         {% endif %}
     </nav>
     <hr>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
     {% block content %}{% endblock %}
 </body>
 </html>
