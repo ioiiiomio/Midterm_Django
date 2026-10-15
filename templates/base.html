@@ -26,6 +26,45 @@
             <p>{{ message }}</p>
         {% endfor %}
     {% endif %}
+
+    <nav class="nav">
+    <a href="{% url 'home' %}" class="nav-brand">Campus</a>
+
+    {% if user.is_authenticated %}
+        {% url 'tutoring:list' as tutoring_url %}
+        {% url 'library:list' as library_url %}
+        {% url 'events:list' as events_url %}
+        {% url 'clubs:list' as clubs_url %}
+
+        {% if tutoring_url %}<a href="{{ tutoring_url }}">Tutoring</a>{% endif %}
+        {% if library_url %}<a href="{{ library_url }}">Library</a>{% endif %}
+        {% if events_url %}<a href="{{ events_url }}">Events</a>{% endif %}
+        {% if clubs_url %}<a href="{{ clubs_url }}">Clubs</a>{% endif %}
+
+        <span class="nav-right">
+            <a href="{% url 'users:profile' %}">{{ user.full_name }}</a>
+                        <form method="post" action="{% url 'users:logout' %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Log out</button>
+            </form>
+        </span>
+    {% else %}
+        <span class="nav-right">
+                        <a href="{% url 'users:login' %}">Log in</a>
+            <a href="{% url 'users:register' %}">Sign up</a>
+        </span>
+    {% endif %}
+</nav>
+
     {% block content %}{% endblock %}
 </body>
 </html>
+
+<style>
+.nav { display: flex; gap: 16px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #ddd; }
+.nav-brand { font-weight: bold; }
+.nav-right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
+.card { display: block; padding: 20px; border: 1px solid #ddd; border-radius: 8px; text-decoration: none; color: inherit; }
+.card:hover { border-color: #888; }
+</style>

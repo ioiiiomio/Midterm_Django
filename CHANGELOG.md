@@ -8,6 +8,18 @@
 - capacity, duplicate booking, schedule conflict and review eligibility validation
 - tutoring admin configuration, templates, tests and initial migration
 - repeatable `seed_tutoring` command with local demo accounts and scenario data
+- navbar links to tutoring, library, events and clubs (shown only when the app has a `<app>:list` url)
+- home page cards for tutoring, library, events and clubs for logged in users
+- login / sign up links in navbar and on home page for guests
+- README section "Connecting your app to the navbar" with url naming rules
+
+### Changed
+- login and logout urls are namespaced now: `users:login`, `users:logout`
+- logout redirects to home page, no logout template
+
+### Fixed
+- `NoReverseMatch` for `logout` and `login` in base.html and home.html
+- missing `auth_views` import in users urls (now uses `LogoutView` directly)
 
 ## 1.4.0 - 15.10.2026
 ### Added

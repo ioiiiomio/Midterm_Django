@@ -5,7 +5,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from apps.users.models import User
 
-
 @register(User)
 class UserAdmin(BaseUserAdmin):
     """User model admin configuration class."""

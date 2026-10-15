@@ -52,8 +52,10 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+If runserver says `You have N unapplied migration(s)` - someone pushed a new migration, just run `python manage.py migrate` again.
+
 Pages that work now:
-- http://127.0.0.1:8000/ - home
+- http://127.0.0.1:8000/ - home (cards for tutoring, library, events, clubs when logged in)
 - http://127.0.0.1:8000/users/register/ - sign up
 - http://127.0.0.1:8000/users/login/ - login (with email, there is no username)
 - http://127.0.0.1:8000/users/profile/ - my profile (only when logged in)
@@ -81,7 +83,7 @@ apps/
   tutoring/    tutor profiles, subjects, sessions, bookings and reviews
 templates/
   base.html    main layout with navbar and messages, extend it in your pages
-  home.html
+  home.html    home page with cards for every app
 settings/
   .env
   conf.py      reads .env
@@ -108,6 +110,45 @@ Tutoring models use the shared custom user via `settings.AUTH_USER_MODEL`. Tutor
 | clubs | <name> |
 | library | <name> |
 | tutoring | <name> |
+
+## Connecting your app to the navbar (important!)
+
+The navbar in `base.html` and the cards on the home page already have links to tutoring, library, events and clubs. A link shows up only when your app has a URL with the right name. Until then it's hidden (navbar) or goes to `#` (home cards), so nothing breaks.
+
+To make your link work you need 3 things:
+
+1. `app_name` in your `urls.py` - the same as your app folder name
+2. a main page (list page) with `name="list"`
+3. your urls included in `settings/urls.py`
+
+Example for events, `apps/events/urls.py`:
+```python
+from django.urls import path
+
+from apps.events.views import EventListView
+
+app_name = "events"
+
+urlpatterns = [
+    path("", EventListView.as_view(), name="list"),
+]
+```
+
+And in `settings/urls.py`:
+```python
+path("events/", include("apps.events.urls")),
+```
+
+So the names must be exactly:
+
+| App | `app_name` | URL name used in navbar |
+|---|---|---|
+| tutoring | `"tutoring"` | `tutoring:list` |
+| library | `"library"` | `library:list` |
+| events | `"events"` | `events:list` |
+| clubs | `"clubs"` | `clubs:list` |
+
+Other pages (detail, create, etc.) you can name however you want, but `list` must be there.
 
 ## Notes for everyone
 
@@ -136,22 +177,27 @@ Your templates go to `apps/<your_app>/templates/<your_app>/` (yes, app name twic
 {% extends "base.html" %}
 ```
 
+All urls have a namespace, so always write the app name before the url name in templates and `reverse()`:
+```html
+<a href="{% url 'events:list' %}">Events</a>
+<a href="{% url 'users:login' %}">Log in</a>
+```
+`{% url 'login' %}` without `users:` will give `NoReverseMatch`.
+
+Auth urls are in the users app: `users:register`, `users:login`, `users:logout`, `users:profile`, `users:profile_edit`.
+
 If a page is only for logged in users, use `LoginRequiredMixin` (or `@login_required` for function views). It will send people to the login page automatically. Put it first: `class MyView(LoginRequiredMixin, ListView)`.
 
 To show a message after an action (like "Registered for event"), use `SuccessMessageMixin` with `success_message = "..."`. `base.html` already shows messages.
 
 When a user edits his own stuff, take the object from `request.user`, not from the url id, so nobody can edit other people's things.
 
-Add your app urls in `settings/urls.py`:
-```python
-path("events/", include("apps.events.urls")),
-```
-and put `app_name = "events"` in your `urls.py`.
-
-Logout must be a POST form, not a link (Django 5 thing). There is already a button in `base.html`.
+Logout must be a POST form, not a link (Django 5 thing, a link gives 405). There is already a button in `base.html`. After logout user goes to home page (`LOGOUT_REDIRECT_URL`), so there is no logout template.
 
 ## If something breaks
 - `TemplateDoesNotExist` - check file name and folder (`.html`, not `.htm`, and `templates/<app>/` inside your app)
+- `NoReverseMatch` - you forgot the namespace (`users:login`, not `login`), or your app is not included in `settings/urls.py`, or `app_name` is missing
+- `You have N unapplied migration(s)` - run `python manage.py migrate`
 - weird old error after you fixed it - stop runserver (Ctrl+C) and start again
 - `'tuple' object has no attribute ...` - you have an extra comma at the end of a line like `model = User,`
 - `No module named 'django'` - venv is not activated
