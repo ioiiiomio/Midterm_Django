@@ -89,7 +89,7 @@ def resource_delete(request: HttpRequest, pk: int) -> HttpResponse:
     if request.method == "POST":
         resource.soft_delete()
         messages.success(request, "Resource deleted.")
-        return redirect("library:resource_list")
+        return redirect("library:list")
     return render(request, "library/resource_confirm_delete.html", {"resource": resource})
 
 

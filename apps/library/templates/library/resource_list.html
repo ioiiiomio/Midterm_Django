@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>Educational Library</h1>
@@ -27,7 +27,7 @@
   </select>
 
   <button type="submit">Filter</button>
-  <a href="{% url 'library:resource_list' %}">Reset</a>
+  <a href="{% url 'library:list' %}">Reset</a>
 </form>
 
 {% if resources %}
