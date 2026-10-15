@@ -2,6 +2,12 @@
 
 ## 1.5.0 - 15.10.2026
 ### Added
+- tutoring profiles, subjects, schedule sessions, student bookings and reviews
+- tutor directory with subject and text search
+- role-checked tutor schedule and student booking workflows
+- capacity, duplicate booking, schedule conflict and review eligibility validation
+- tutoring admin configuration, templates, tests and initial migration
+- repeatable `seed_tutoring` command with local demo accounts and scenario data
 - navbar links to tutoring, library, events and clubs (shown only when the app has a `<app>:list` url)
 - home page cards for tutoring, library, events and clubs for logged in users
 - login / sign up links in navbar and on home page for guests
