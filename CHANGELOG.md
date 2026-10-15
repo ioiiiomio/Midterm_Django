@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Events feature - 15.10.2026
+### Added
+- Event and EventRegistration models using the shared user and abstract base model.
+- Database constraints, initial Events migration, and admin listings/search/filtering.
+- Event list/detail/create/edit/delete pages at `/events/`, with `events:list` integration.
+- Local-date/category filters, ownership/admin permissions, CSRF-protected registrations.
+- Capacity checks with transactional parent locking and soft cancellation/rejoining.
+- Events tests and a beginner-friendly defense/demo guide.
+
+
 ## 1.5.0 - 15.10.2026
 ### Added
 - tutoring profiles, subjects, schedule sessions, student bookings and reviews
