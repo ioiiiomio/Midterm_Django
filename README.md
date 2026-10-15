@@ -205,3 +205,30 @@ Logout must be a POST form, not a link (Django 5 thing, a link gives 405). There
 ruff check .
 python manage.py check
 ```
+
+## Events application
+
+Events are available at `/events/`; the existing navbar and home card resolve
+`events:list` automatically. See [the Events defense guide](apps/events/DEFENSE.md)
+for the file inventory, design explanation, local setup, and demonstration script.
+
+Any logged-in user may create an event and becomes its organizer. Only the
+organizer, an account with the shared `admin` role, or a superuser may edit/delete
+it. Registration/cancellation always apply to the current user and require POST
+with CSRF protection. Events and cancelled registrations use the shared soft-delete
+flag. Rejoining restores the same registration row. Past events remain visible,
+but new registration closes when the event starts. Filters use campus-local dates.
+
+Run verification after installing `requirements/dev.txt` and configuring the
+existing environment variables:
+
+```bash
+python manage.py makemigrations --check --dry-run
+python manage.py check
+python manage.py test apps.events
+ruff check apps/events settings/urls.py
+```
+
+No remote `dev` branch existed when Events was implemented, so `feature/events`
+starts from `main` and its PR targets `main` unless the team creates/designates
+another integration branch. No new dependency was introduced.

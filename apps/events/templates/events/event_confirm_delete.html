@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ event.title }}{% endblock %}
+{% block content %}
+<h1>Delete event</h1>
+<p>Delete "{{ event.title }}"? It will no longer be available to participants.</p>
+<form method="post">{% csrf_token %}<button type="submit">Confirm deletion</button></form>
+<p><a href="{{ event.get_absolute_url }}">Keep event</a></p>
+{% endblock %}
