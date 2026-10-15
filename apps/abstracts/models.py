@@ -9,6 +9,7 @@ class AbstractBaseModel(Model):
 
     def soft_delete(self) -> None:
         self.deleted_at = timezone.now()
-        self.save(update_fields=['deleted_at'])
+        self.save(update_fields=["deleted_at"])
+
     class Meta:
         abstract = True
