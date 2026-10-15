@@ -10,7 +10,9 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+
 from settings.conf import ENV_ID
+
 
 assert ENV_ID, "CAMPUS_ENV_ID environment variable not set"
 
