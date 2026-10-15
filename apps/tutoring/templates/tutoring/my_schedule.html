@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}My tutoring schedule | CampusHub{% endblock %}
+
+{% block content %}
+    <h1>My tutoring schedule</h1>
+    <p><a href="{% url 'tutoring:profile_edit' %}">Edit tutor profile</a> · <a href="{% url 'tutoring:session_add' %}">Add a session</a> · <a href="{% url 'tutoring:tutor_list' %}">Tutor directory</a></p>
+    {% for session in sessions %}
+        <article>
+            <h2>{{ session.title }}</h2>
+            <p>{{ session.subject.name }} · {{ session.starts_at }} to {{ session.ends_at }}</p>
+            <p>{{ session.confirmed_booking_count }} / {{ session.capacity }} booked</p>
+            <a href="{% url 'tutoring:session_edit' session.pk %}">Edit</a>
+            <form method="post" action="{% url 'tutoring:session_cancel' session.pk %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Cancel session</button>
+            </form>
+            {% for booking in session.bookings.all %}
+                {% if booking.status == "confirmed" %}<p>Booked by {{ booking.student.full_name }}</p>{% endif %}
+            {% endfor %}
+        </article>
+    {% empty %}
+        <p>No upcoming sessions in your schedule.</p>
+    {% endfor %}
+{% endblock %}

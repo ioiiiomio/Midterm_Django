@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tutor.user.full_name }} | CampusHub{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'tutoring:tutor_list' %}">All tutors</a></p>
+    <h1>{{ tutor.user.full_name }}</h1>
+    <h2>{{ tutor.headline }}</h2>
+    <p>{{ tutor.bio|linebreaksbr }}</p>
+    <p>{{ tutor.hourly_rate }} / hour · {{ tutor.years_experience }} years' experience</p>
+    <p>Subjects: {% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    {% if average_rating %}<p>Average rating: {{ average_rating|floatformat:1 }} / 5</p>{% endif %}
+
+    {% if user == tutor.user %}
+        <p><a href="{% url 'tutoring:profile_edit' %}">Edit profile</a> · <a href="{% url 'tutoring:my_schedule' %}">Manage schedule</a></p>
+    {% endif %}
+
+    <h2>Upcoming sessions</h2>
+    {% for session in sessions %}
+        <article>
+            <h3>{{ session.title }}</h3>
+            <p>{{ session.subject.name }} · {{ session.starts_at }} to {{ session.ends_at }}</p>
+            {% if session.location %}<p>{{ session.location }}</p>{% endif %}
+            {% if session.description %}<p>{{ session.description|linebreaksbr }}</p>{% endif %}
+            <p>{{ session.confirmed_booking_count }} / {{ session.capacity }} booked</p>
+            {% if user.is_authenticated and user.role == "student" %}
+                <form method="post" action="{% url 'tutoring:booking_create' session.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">Book session</button>
+                </form>
+            {% elif not user.is_authenticated %}
+                <p><a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">Log in to book</a></p>
+            {% endif %}
+        </article>
+    {% empty %}
+        <p>No upcoming sessions are available.</p>
+    {% endfor %}
+
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+        <article>
+            <p>{{ review.rating }} / 5 · {{ review.booking.student.full_name }}</p>
+            <p>{{ review.comment|linebreaksbr }}</p>
+        </article>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+{% endblock %}

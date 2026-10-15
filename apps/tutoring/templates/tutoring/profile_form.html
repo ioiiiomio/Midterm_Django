@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor profile | CampusHub{% endblock %}
+
+{% block content %}
+    <h1>Tutor profile</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save profile</button>
+    </form>
+    <p><a href="{% url 'tutoring:tutor_list' %}">Back to tutors</a></p>
+{% endblock %}

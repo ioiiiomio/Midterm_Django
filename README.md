@@ -60,7 +60,13 @@ Pages that work now:
 - http://127.0.0.1:8000/users/login/ - login (with email, there is no username)
 - http://127.0.0.1:8000/users/profile/ - my profile (only when logged in)
 - http://127.0.0.1:8000/users/profile/edit/ - edit my name
+- http://127.0.0.1:8000/tutoring/ - tutor directory and subject search
+- http://127.0.0.1:8000/tutoring/tutors/<id>/ - tutor profile and available sessions
+- http://127.0.0.1:8000/tutoring/schedule/ - tutor schedule management
+- http://127.0.0.1:8000/tutoring/bookings/ - student bookings and eligible reviews
 - http://127.0.0.1:8000/admin/ - admin
+
+To load repeatable local tutoring demo data, run `python manage.py seed_tutoring`. The command prints demo account emails and their shared password; pass `--password` to choose another one. Demo accounts include an admin, three tutors, two students, available and nearly full sessions, a cancelled session, and a completed session with a review. Use these accounts only in local development.
 
 Note: don't run `django-admin startproject`, project is already created.
 
@@ -74,7 +80,7 @@ apps/
   events/
   clubs/
   library/
-  tutoring/
+  tutoring/    tutor profiles, subjects, sessions, bookings and reviews
 templates/
   base.html    main layout with navbar and messages, extend it in your pages
   home.html    home page with cards for every app
@@ -92,6 +98,8 @@ requirements/
   prod.txt
 ruff.toml
 ```
+
+Tutoring models use the shared custom user via `settings.AUTH_USER_MODEL`. Tutors manage their profile and future sessions under `/tutoring/`; students can book available sessions, cancel upcoming bookings, and review a confirmed session after it ends. Booking validation enforces seat capacity and prevents overlapping sessions.
 
 ## Team
 
