@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ club.name }}{% endblock %}
+
+{% block content %}
+    <h2>Delete club</h2>
+    <p>Are you sure you want to delete <strong>{{ club.name }}</strong>?
+       All memberships will be deleted too. This can't be undone.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, delete</button>
+        <a href="{% url 'clubs:detail' club.pk %}">Cancel</a>
+    </form>
+{% endblock %}

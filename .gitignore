@@ -1,23 +1,43 @@
+# --- Python ---
 __pycache__/
 *.py[cod]
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Virtual env ---
 .venv/
 venv/
+env/
 
-#env
+# --- Secrets (never push!) ---
 .env
 settings/.env
-settings/.env.example
+*.env
+!*.env.example
 
-#log
-logs/*
-!logs/.gitkeep
-
-#my db
+# --- Django ---
 db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*.log
 
-#ide/os
+# --- Tools ---
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- IDE ---
 .idea/
 .vscode/
+*.swp
+
+# --- OS ---
 .DS_Store
-._*
-.ruff_cache/
+Thumbs.db
+desktop.ini

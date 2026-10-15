@@ -1,18 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import ClubForm
 from .models import Club, Membership
 
 
-# Club List
-def club_list(request):
+def club_list(request: HttpRequest) -> HttpResponse:
+    """All clubs with search by name/description and filter by category."""
     query = request.GET.get("q", "")
     category = request.GET.get("category", "")
 
-    clubs = Club.objects.all()
+    clubs = Club.objects.select_related("president").order_by("name")
 
     if query:
         clubs = clubs.filter(Q(name__icontains=query) | Q(description__icontains=query))
@@ -26,16 +28,19 @@ def club_list(request):
             "clubs": clubs,
             "categories": Club.CATEGORY_CHOICES,
             "query": query,
+            "category": category,
         },
     )
 
 
-# Club Detail
-def club_detail(request, pk):
-    club = get_object_or_404(Club, pk=pk)
-    membership = club.memberships.filter(status="approved")
+def club_detail(request: HttpRequest, pk: int) -> HttpResponse:
+    """One club: info, approved members, and pending requests for the president."""
+    club = get_object_or_404(Club.objects.select_related("president"), pk=pk)
+    members = club.memberships.filter(status="approved").select_related("user")
     pending_requests = (
-        club.memberships.filter(status="pending") if request.user == club.president else None
+        club.memberships.filter(status="pending").select_related("user")
+        if request.user == club.president
+        else None
     )
 
     user_membership = None
@@ -47,16 +52,16 @@ def club_detail(request, pk):
         "clubs/club_detail.html",
         {
             "club": club,
-            "membership": membership,
+            "members": members,
             "pending_requests": pending_requests,
             "user_membership": user_membership,
         },
     )
 
 
-# Club Creation
 @login_required
-def club_create(request):
+def club_create(request: HttpRequest) -> HttpResponse:
+    """Create a club. The creator becomes president and an approved member."""
     if request.method == "POST":
         form = ClubForm(request.POST, request.FILES)
         if form.is_valid():
@@ -65,7 +70,8 @@ def club_create(request):
             club.save()
 
             Membership.objects.create(club=club, user=request.user, status="approved")
-            return redirect("club_detail", pk=club.pk)
+            messages.success(request, "Club created successfully!")
+            return redirect("clubs:detail", pk=club.pk)
     else:
         form = ClubForm()
 
@@ -76,20 +82,20 @@ def club_create(request):
     )
 
 
-# Edit Club
 @login_required
-def club_edit(request, pk):
+def club_edit(request: HttpRequest, pk: int) -> HttpResponse:
+    """Edit a club. Only the president can do it."""
     club = get_object_or_404(Club, pk=pk)
     if request.user != club.president:
         messages.error(request, "You do not have the authority to edit club information")
-        return redirect("club_detail", pk=club.pk)
+        return redirect("clubs:detail", pk=club.pk)
 
     if request.method == "POST":
         form = ClubForm(request.POST, request.FILES, instance=club)
         if form.is_valid():
             form.save()
             messages.success(request, "Club information updated successfully!")
-            return redirect("club_detail", pk=club.pk)
+            return redirect("clubs:detail", pk=club.pk)
     else:
         form = ClubForm(instance=club)
 
@@ -100,107 +106,53 @@ def club_edit(request, pk):
     )
 
 
-# Delete Club
 @login_required
-def club_delete(request, pk):
+def club_delete(request: HttpRequest, pk: int) -> HttpResponse:
+    """Confirm page on GET, delete on POST. Only the president can do it."""
     club = get_object_or_404(Club, pk=pk)
     if request.user != club.president:
         messages.error(request, "You do not have the authority to delete this club")
-        return redirect("club_detail", pk=club.pk)
+        return redirect("clubs:detail", pk=club.pk)
 
     if request.method == "POST":
         club.delete()
         messages.success(request, "Club deleted successfully")
-        return redirect("club_list")
+        return redirect("clubs:list")
 
     return render(request, "clubs/club_confirm_delete.html", {"club": club})
 
 
-# Join Request
 @login_required
-def join_request(request, pk):
+@require_POST
+def join_request(request: HttpRequest, pk: int) -> HttpResponse:
+    """Send a request to join a club."""
     club = get_object_or_404(Club, pk=pk)
-    membership, created = Membership.objects.get_or_create(club=club, user=request.user)
+    _, created = Membership.objects.get_or_create(club=club, user=request.user)
     if created:
         messages.success(request, "Membership request submitted successfully!")
     else:
         messages.info(request, "You have already requested or joined this club.")
-    return redirect("club_detail", pk=club.pk)
+    return redirect("clubs:detail", pk=club.pk)
 
 
-# Manage Request
 @login_required
-def manage_request(request, membership_id, action):
-    membership = get_object_or_404(Membership, id=membership_id)
+@require_POST
+def manage_request(request: HttpRequest, membership_id: int, action: str) -> HttpResponse:
+    """Approve or reject a join request. Only the club president can do it."""
+    membership = get_object_or_404(Membership.objects.select_related("club"), id=membership_id)
     if request.user != membership.club.president:
         messages.error(request, "Permission denied")
-        return redirect("club_detail", pk=membership.club.pk)
+        return redirect("clubs:detail", pk=membership.club.pk)
 
     if action == "approve":
         membership.status = "approved"
-        messages.success(request, f"User {membership.user} accepted to the club.")
+        messages.success(request, f"User {membership.user.email} accepted to the club.")
     elif action == "reject":
         membership.status = "rejected"
-        messages.info(request, f"Request from {membership.user} rejected.")
+        messages.info(request, f"Request from {membership.user.email} rejected.")
+    else:
+        messages.error(request, "Unknown action")
+        return redirect("clubs:detail", pk=membership.club.pk)
 
     membership.save()
-    return redirect("club_detail", pk=membership.club.pk)
-
-  return render(
-      request,
-      'clubs/club_form.html',
-      {'form': form, 'title': 'Edit Club', 'club': club},
-  )
-
-
-# Delete Club
-@login_required
-def club_delete(request, pk):
-  club = get_object_or_404(Club, pk=pk)
-  if request.user != club.president:
-    messages.error(
-        request, 'You do not have the authority to delete this club'
-    )
-    return redirect('club_detail', pk=club.pk)
-
-  if request.method == 'POST':
-    club.delete()
-    messages.success(request, 'Club deleted successfully')
-    return redirect('club_list')
-
-  return render(request, 'clubs/club_confirm_delete.html', {'club': club})
-
-
-# Join Request
-@login_required
-def join_request(request, pk):
-  club = get_object_or_404(Club, pk=pk)
-  membership, created = Membership.objects.get_or_create(
-      club=club, user=request.user
-  )
-  if created:
-    messages.success(request, 'Membership request submitted successfully!')
-  else:
-    messages.info(request, 'You have already requested or joined this club.')
-  return redirect('club_detail', pk=club.pk)
-
-
-# Manage Request
-@login_required
-def manage_request(request, membership_id, action):
-  membership = get_object_or_404(Membership, id=membership_id)
-  if request.user != membership.club.president:
-    messages.error(request, 'Permission denied')
-    return redirect('club_detail', pk=membership.club.pk)
-
-  if action == 'approve':
-    membership.status = 'approved'
-    messages.success(
-        request, f'User {membership.user} accepted to the club.'
-    )
-  elif action == 'reject':
-    membership.status = 'rejected'
-    messages.info(request, f'Request from {membership.user} rejected.')
-
-  membership.save()
-  return redirect('club_detail', pk=membership.club.pk)
+    return redirect("clubs:detail", pk=membership.club.pk)
