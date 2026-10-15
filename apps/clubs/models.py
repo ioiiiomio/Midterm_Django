@@ -63,33 +63,3 @@ class Membership(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.club.name} ({self.status})"
-class Membership(models.Model):
-
-    MAX_LENGTH_NAME=50
-    MAX_LENGTH_DESC=1000
-
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-    ]
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='memberships'
-        )
-    status = models.CharField(
-        max_length=MAX_LENGTH_NAME,
-        choices=STATUS_CHOICES,
-        default='pending'
-    )
-    joined_at = models.DateTimeField(
-        auto_now_add=True,
-    )
-
-    class Meta:
-        unique_together = ('club', 'user')
-
-    def __str__(self):
-        return self.user, self.club.name, self.status
