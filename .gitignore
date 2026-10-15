@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+#env
+.env
+settings/.env
+settings/.env.example
+
+#log
+logs/*
+!logs/.gitkeep
+
+#my db
+db.sqlite3
+
+#ide/os
+.idea/
+.vscode/
+.DS_Store
+._*
+.ruff_cache/

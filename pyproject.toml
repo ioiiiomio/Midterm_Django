@@ -1,0 +1,14 @@
+line-length = 100
+extend-exclude = ["**/migrations", ".venv"]
+
+[lint]
+select = ["E", "F", "W", "N", "ANN"]
+ignore = ["ANN401"]
+
+[lint.per-file-ignores]
+"settings/*" = ["F403", "F405"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.0",
+]

@@ -26,3 +26,4 @@ See the installation documentation for details and alternative installation meth
 ## Linter: [ruff](https://pydevtools.com/handbook/how-to/how-to-configure-ruff-for-django/)
 
 ## Project structure
+**_To start the project run: django-admin startproject settings ._**
