@@ -9,29 +9,41 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+import sys
 from pathlib import Path
 
 from settings.conf import *  # noqa
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+
+DJANGO_DEFAULT_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
+PROJECT_APPS = [
+    "apps.abstracts.apps.AbstractsConfig",
+    "apps.users.apps.UsersConfig",
+    "apps.events.apps.EventsConfig",
+    "apps.clubs.apps.ClubsConfig",
+    "apps.library.apps.LibraryConfig",
+    "apps.tutoring.apps.TutoringConfig",
+]
+# separated just for clarity
+INSTALLED_APPS = DJANGO_DEFAULT_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
