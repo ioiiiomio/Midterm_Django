@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ title }}</h2>
+
+    {# enctype is needed, otherwise the logo file is not sent #}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+        {% if club %}
+            <a href="{% url 'clubs:detail' club.pk %}">Cancel</a>
+        {% else %}
+            <a href="{% url 'clubs:list' %}">Cancel</a>
+        {% endif %}
+    </form>
+{% endblock %}

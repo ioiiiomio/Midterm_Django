@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Clubs</h2>
+        {% if user.is_authenticated %}
+            <a href="{% url 'clubs:create' %}">+ Create club</a>
+        {% endif %}
+    </div>
+
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search clubs...">
+        <select name="category">
+            <option value="">All categories</option>
+            {% for value, label in categories %}
+                <option value="{{ value }}" {% if value == category %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search</button>
+        {% if query or category %}
+            <a href="{% url 'clubs:list' %}">Clear</a>
+        {% endif %}
+    </form>
+
+    {% if clubs %}
+        <div class="cards">
+            {% for club in clubs %}
+                <a class="card" href="{% url 'clubs:detail' club.pk %}">
+                    {% if club.logo %}
+                        <img src="{{ club.logo.url }}" alt="{{ club.name }} logo"
+                             style="width:64px; height:64px; object-fit:cover; border-radius:8px;">
+                    {% endif %}
+                    <h3>{{ club.name }}</h3>
+                    <p><small>{{ club.get_category_display }}</small></p>
+                    <p>{{ club.description|truncatewords:20 }}</p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No clubs found.</p>
+    {% endif %}
+{% endblock %}
