@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 from django.conf import settings
 from django.db import models
+=======
+>>>>>>> origin/main
 
 
 class Club(models.Model):

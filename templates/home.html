@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h2>Welcome, {{ user.full_name }}</h2>
+
+        {% url 'tutoring:list' as tutoring_url %}
+        {% url 'library:list' as library_url %}
+        {% url 'events:list' as events_url %}
+        {% url 'clubs:list' as clubs_url %}
+
+        <div class="cards">
+            <a class="card" href="{{ tutoring_url|default:'#' }}">
+                <h3>Tutoring</h3>
+                <p>Find a tutor or offer sessions</p>
+            </a>
+            <a class="card" href="{{ library_url|default:'#' }}">
+                <h3>Library</h3>
+                <p>Browse and borrow books</p>
+            </a>
+            <a class="card" href="{{ events_url|default:'#' }}">
+                <h3>Events</h3>
+                <p>Upcoming events on campus</p>
+            </a>
+            <a class="card" href="{{ clubs_url|default:'#' }}">
+                <h3>Clubs</h3>
+                <p>Join student clubs</p>
+            </a>
+        </div>
+    {% else %}
+        <h2>Welcome</h2>
+        <p><a href="{% url 'login' %}">Log in</a> or <a href="{% url 'users:register' %}">sign up</a> to continue.</p>
+    {% endif %}
+{% endblock %}

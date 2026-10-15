@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 from django.contrib import admin
 from .models import Club, Membership
+=======
+>>>>>>> origin/main
 
 
 @admin.register(Club)

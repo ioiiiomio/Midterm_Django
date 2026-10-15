@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
                 code="email_empty",
             )
 
-        new_user: "User" = self.model(
+        new_user: User = self.model(
             email=self.normalize_email(email).lower(),
             **kwargs,
         )
@@ -48,7 +48,7 @@ class UserManager(BaseUserManager):
         **kwargs: Any,
     ) -> "User":
         """Create a regular user."""
-        new_user: "User" = self.__obtain_user_instance(
+        new_user: User = self.__obtain_user_instance(
             email=email,
             password=password,
             **kwargs,
@@ -63,7 +63,7 @@ class UserManager(BaseUserManager):
         **kwargs: Any,
     ) -> "User":
         """Create superuser. Used by manage.py createsuperuser."""
-        new_user: "User" = self.__obtain_user_instance(
+        new_user: User = self.__obtain_user_instance(
             email=email,
             password=password,
             role=User.Role.ADMIN,

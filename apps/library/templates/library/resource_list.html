@@ -1,0 +1,55 @@
+{% extends "library/base.html" %}
+
+{% block content %}
+<h1>Educational Library</h1>
+
+<form method="get">
+  <input type="text" name="q" placeholder="Search by title" value="{{ query }}">
+
+  <select name="subject">
+    <option value="">All subjects</option>
+    {% for subject in subjects %}
+      <option value="{{ subject.id }}"
+        {% if subject.id|stringformat:"s" == selected_subject %}selected{% endif %}>
+        {{ subject.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <select name="type">
+    <option value="">All types</option>
+    {% for value, label in resource_types %}
+      <option value="{{ value }}"
+        {% if value == selected_type %}selected{% endif %}>
+        {{ label }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">Filter</button>
+  <a href="{% url 'library:resource_list' %}">Reset</a>
+</form>
+
+{% if resources %}
+  <table>
+    <tr>
+      <th>Title</th>
+      <th>Subject</th>
+      <th>Type</th>
+      <th>Uploaded by</th>
+      <th>Date</th>
+    </tr>
+    {% for resource in resources %}
+      <tr>
+        <td><a href="{% url 'library:resource_detail' resource.pk %}">{{ resource.title }}</a></td>
+        <td>{{ resource.subject }}</td>
+        <td>{{ resource.get_resource_type_display }}</td>
+        <td>{{ resource.uploader.full_name }}</td>
+        <td>{{ resource.created_at|date:"Y-m-d" }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>No resources found.</p>
+{% endif %}
+{% endblock %}

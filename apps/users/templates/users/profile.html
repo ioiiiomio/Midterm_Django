@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}My profile{% endblock %}
+
+{% block content %}
+    <h2>{{ user.full_name }}</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Role: {{ user.get_role_display }}</p>
+    <p>Joined: {{ user.created_at|date:"d.m.Y" }}</p>
+    <a href="{% url 'users:profile_edit' %}">Edit profile</a>
+{% endblock %}

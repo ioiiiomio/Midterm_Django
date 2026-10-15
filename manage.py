@@ -5,7 +5,8 @@ import sys
 
 from settings.conf import ENV_ID
 
-def main():
+
+def main() -> None:
     """Run administrative tasks."""
     assert ENV_ID, "CAMPUS_ENV_ID environment variable not set"
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'settings.env.{ENV_ID}')
