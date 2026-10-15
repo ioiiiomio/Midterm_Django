@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'events:list' %}">All events</a></p>
+<h1>{{ event.title }}</h1>
+{{ event.description|linebreaks }}
+<p>{{ event.date|date:"M j, Y H:i" }} (campus time) - {{ event.location }}</p>
+<p>Category: {{ event.get_category_display }}</p>
+<p>Organizer: {{ event.organizer.full_name|default:event.organizer }}</p>
+<p>{{ event.available_spots }} spots remaining (capacity: {{ event.capacity }}).</p>
+{% if can_manage %}
+<p><a href="{% url 'events:update' event.pk %}">Edit event</a> | <a href="{% url 'events:delete' event.pk %}">Delete event</a></p>
+{% endif %}
+{% if is_registered %}
+<p>You are registered.</p>
+<form method="post" action="{% url 'events:cancel' event.pk %}">{% csrf_token %}<button type="submit">Cancel my registration</button></form>
+{% elif event.has_started %}
+<p>Registration closed: this event has started.</p>
+{% elif not event.available_spots %}
+<p>This event is full.</p>
+{% elif user.is_authenticated %}
+<form method="post" action="{% url 'events:register' event.pk %}">{% csrf_token %}<button type="submit">Register for event</button></form>
+{% else %}
+<p><a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">Log in to register</a></p>
+{% endif %}
+<h2>Participants</h2>
+<ul>{% for registration in participants %}<li>{{ registration.student.full_name|default:"Student" }}</li>{% empty %}<li>No participants yet.</li>{% endfor %}</ul>
+{% endblock %}

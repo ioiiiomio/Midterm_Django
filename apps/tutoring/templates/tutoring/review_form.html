@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Leave a review{% endblock %}
+
+{% block content %}
+    <h2>Leave a review</h2>
+    <p>
+        <strong>{{ booking.session.title }}</strong>
+        with {{ booking.session.tutor.user.full_name|default:booking.session.tutor.user.email }}<br>
+        <small>{{ booking.session.starts_at|date:"d.m.Y H:i" }}</small>
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button type="submit">Submit review</button>
+        <a href="{% url 'tutoring:my_bookings' %}">Cancel</a>
+    </form>
+{% endblock %}

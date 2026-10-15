@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}My schedule{% endblock %}
+
+{% block content %}
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h2>My schedule</h2>
+        <span style="display:flex; gap:12px;">
+            <a href="{% url 'tutoring:session_add' %}">+ Add session</a>
+            <a href="{% url 'tutoring:profile_edit' %}">My tutor profile</a>
+        </span>
+    </div>
+
+    {% if sessions %}
+        <ul>
+            {% for session in sessions %}
+                <li style="margin-bottom:16px;">
+                    <strong>{{ session.title }}</strong> ({{ session.subject.name }})
+                    {% if session.is_cancelled %}<em>— cancelled</em>{% endif %}<br>
+                    {{ session.starts_at|date:"d.m.Y H:i" }} – {{ session.ends_at|date:"H:i" }}
+                    {% if session.location %}· {{ session.location }}{% endif %}
+                    {% if session.meeting_url %}· <a href="{{ session.meeting_url }}">meeting link</a>{% endif %}<br>
+                    <small>{{ session.confirmed_booking_count }} / {{ session.capacity }} seats taken</small>
+
+                    {% if session.confirmed_booking_count %}
+                        <br><small>Students:
+                            {% for booking in session.bookings.all %}
+                                {% if booking.status == "confirmed" %}
+                                    {{ booking.student.full_name|default:booking.student.email }}{% if not forloop.last %}, {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </small>
+                    {% endif %}
+
+                    {% if not session.is_cancelled %}
+                        <div style="margin-top:4px;">
+                            <a href="{% url 'tutoring:session_edit' session.pk %}">Edit</a>
+                            <form method="post" action="{% url 'tutoring:session_cancel' session.pk %}" style="display:inline"
+                                  onsubmit="return confirm('Cancel this session? All bookings will be cancelled too.');">
+                                {% csrf_token %}
+                                <button type="submit">Cancel session</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming sessions. <a href="{% url 'tutoring:session_add' %}">Add one</a>.</p>
+    {% endif %}
+{% endblock %}

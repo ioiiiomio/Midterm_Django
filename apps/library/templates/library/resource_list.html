@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>Educational Library</h1>
@@ -41,7 +41,7 @@
     </tr>
     {% for resource in resources %}
       <tr>
-        <td><a href="{% url 'library:detail' resource.pk %}">{{ resource.title }}</a></td>
+        <td><a href="{% url 'library:resource_detail' resource.pk %}">{{ resource.title }}</a></td>
         <td>{{ resource.subject }}</td>
         <td>{{ resource.get_resource_type_display }}</td>
         <td>{{ resource.uploader.full_name }}</td>

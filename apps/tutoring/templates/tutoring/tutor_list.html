@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Tutors{% endblock %}
+
+{% block content %}
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h2>Tutors</h2>
+        {% if user.is_authenticated %}
+            <span style="display:flex; gap:12px;">
+                {% if user.role == "tutor" %}
+                    <a href="{% url 'tutoring:my_schedule' %}">My schedule</a>
+                    <a href="{% url 'tutoring:profile_edit' %}">My tutor profile</a>
+                {% elif user.role == "student" %}
+                    <a href="{% url 'tutoring:my_bookings' %}">My bookings</a>
+                {% endif %}
+            </span>
+        {% endif %}
+    </div>
+
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search tutors...">
+        <select name="subject">
+            <option value="">All subjects</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.pk }}"
+                        {% if subject.pk|stringformat:"s" == selected_subject %}selected{% endif %}>
+                    {{ subject.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search</button>
+        {% if search_query or selected_subject %}
+            <a href="{% url 'tutoring:list' %}">Clear</a>
+        {% endif %}
+    </form>
+
+    {% if tutors %}
+        <div class="cards">
+            {% for tutor in tutors %}
+                <a class="card" href="{% url 'tutoring:tutor_detail' tutor.pk %}">
+                    <h3>{{ tutor.user.full_name|default:tutor.user.email }}</h3>
+                    <p>{{ tutor.headline }}</p>
+                    <p><small>
+                        {% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </small></p>
+                    <p><small>{{ tutor.hourly_rate }} / hour · {{ tutor.years_experience }} yrs experience</small></p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tutors found.</p>
+    {% endif %}
+{% endblock %}

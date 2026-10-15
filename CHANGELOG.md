@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## Events feature - 15.10.2026
+### Added
+- Event and EventRegistration models using the shared user and abstract base model.
+- Database constraints, initial Events migration, and admin listings/search/filtering.
+- Event list/detail/create/edit/delete pages at `/events/`, with `events:list` integration.
+- Local-date/category filters, ownership/admin permissions, CSRF-protected registrations.
+- Capacity checks with transactional parent locking and soft cancellation/rejoining.
+- Events tests and a beginner-friendly defense/demo guide.
+
+
+## 1.5.0 - 15.10.2026
+### Added
+- tutoring profiles, subjects, schedule sessions, student bookings and reviews
+- tutor directory with subject and text search
+- role-checked tutor schedule and student booking workflows
+- capacity, duplicate booking, schedule conflict and review eligibility validation
+- tutoring admin configuration, templates, tests and initial migration
+- repeatable `seed_tutoring` command with local demo accounts and scenario data
+- navbar links to tutoring, library, events and clubs (shown only when the app has a `<app>:list` url)
+- home page cards for tutoring, library, events and clubs for logged in users
+- login / sign up links in navbar and on home page for guests
+- README section "Connecting your app to the navbar" with url naming rules
+
+### Changed
+- login and logout urls are namespaced now: `users:login`, `users:logout`
+- logout redirects to home page, no logout template
+
+### Fixed
+- `NoReverseMatch` for `logout` and `login` in base.html and home.html
+- missing `auth_views` import in users urls (now uses `LogoutView` directly)
+
 ## 1.4.0 - 15.10.2026
 ### Added
 - profile page (`/users/profile/`) - shows name, email, role and join date

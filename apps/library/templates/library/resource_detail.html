@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>{{ resource.title }}</h1>
@@ -10,18 +10,15 @@
 <p><strong>Description:</strong> {{ resource.description|default:"No description." }}</p>
 
 <p>
-  <a href="{% url 'library:download' resource.pk %}">Download</a>
+  <a href="{% url 'library:resource_download' resource.pk %}">Download</a>
 </p>
 
-  {% if user.role == "admin" or resource.uploader == user %}
-    <p>
-      <a href="{% url 'library:update' resource.pk %}">Edit</a>
-      <form method="post" action="{% url 'library:delete' resource.pk %}" style="display:inline">
-        {% csrf_token %}
-        <button type="submit">Delete</button>
-      </form>
-    </p>
-  {% endif %}
+{% if user == resource.uploader %}
+  <p>
+    <a href="{% url 'library:resource_update' resource.pk %}">Edit</a>
+    <a href="{% url 'library:resource_delete' resource.pk %}">Delete</a>
+  </p>
+{% endif %}
 
 <p><a href="{% url 'library:list' %}">Back to library</a></p>
 {% endblock %}

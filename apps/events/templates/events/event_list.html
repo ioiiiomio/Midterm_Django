@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Campus events{% endblock %}
+{% block content %}
+<h1>Campus events</h1>
+{% if user.is_authenticated %}<p><a href="{% url 'events:create' %}">Create event</a></p>{% endif %}
+<form method="get">
+    {{ filter_form.as_p }}
+    <button type="submit">Filter</button>
+    <a href="{% url 'events:list' %}">Clear filters</a>
+</form>
+<div class="cards">
+{% for event in events %}
+    <article class="card">
+        <h2><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h2>
+        <p>{{ event.date|date:"M j, Y H:i" }} - {{ event.location }}</p>
+        <p>{{ event.get_category_display }}</p>
+        <p>{{ event.participant_count }} / {{ event.capacity }} registered</p>
+    </article>
+{% empty %}<p>No events match your filters.</p>{% endfor %}
+</div>
+{% endblock %}

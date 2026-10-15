@@ -6,10 +6,10 @@ from . import views
 app_name = "library"
 
 urlpatterns = [
-    path("", views.ResourceListView.as_view(), name="list"),
-    path("add/", views.ResourceCreateView.as_view(), name="create"),
-    path("<int:pk>/", views.ResourceDetailView.as_view(), name="detail"),
-    path("<int:pk>/edit/", views.ResourceUpdateView.as_view(), name="update"),
-    path("<int:pk>/delete/", views.ResourceDeleteView.as_view(), name="delete"),
-    path("<int:pk>/download/", views.ResourceDownloadView.as_view(), name="download"),
+    path("", views.resource_list, name="list"),
+    path("upload/", views.resource_create, name="resource_create"),
+    path("<int:pk>/", views.resource_detail, name="resource_detail"),
+    path("<int:pk>/edit/", views.resource_update, name="resource_update"),
+    path("<int:pk>/delete/", views.resource_delete, name="resource_delete"),
+    path("<int:pk>/download/", views.resource_download, name="resource_download"),
 ]

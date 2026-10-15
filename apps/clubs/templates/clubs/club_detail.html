@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ club.name }}{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'clubs:list' %}">&larr; All clubs</a></p>
+
+    <div style="display:flex; gap:16px; align-items:center;">
+        {% if club.logo %}
+            <img src="{{ club.logo.url }}" alt="{{ club.name }} logo"
+                 style="width:96px; height:96px; object-fit:cover; border-radius:12px;">
+        {% endif %}
+        <div>
+            <h2 style="margin:0;">{{ club.name }}</h2>
+            <p style="margin:4px 0;"><small>{{ club.get_category_display }}</small></p>
+            <p style="margin:4px 0;">President: {{ club.president.full_name|default:club.president.email }}</p>
+            <p style="margin:4px 0;"><small>Created {{ club.created_at|date:"d.m.Y" }}</small></p>
+        </div>
+    </div>
+
+    <p>{{ club.description|linebreaksbr }}</p>
+
+    {# Actions for the current user #}
+    {% if user.is_authenticated %}
+        {% if user == club.president %}
+            <p>
+                <a href="{% url 'clubs:edit' club.pk %}">Edit club</a> ·
+                <a href="{% url 'clubs:delete' club.pk %}">Delete club</a>
+            </p>
+        {% elif user_membership %}
+            <p>Your status: <strong>{{ user_membership.get_status_display }}</strong></p>
+        {% else %}
+            <form method="post" action="{% url 'clubs:join' club.pk %}">
+                {% csrf_token %}
+                <button type="submit">Request to join</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <p><a href="{% url 'users:login' %}?next={{ request.path }}">Log in</a> to join this club.</p>
+    {% endif %}
+
+    {# Pending requests, only the president gets them from the view #}
+    {% if pending_requests is not None %}
+        <h3>Pending requests ({{ pending_requests|length }})</h3>
+        {% if pending_requests %}
+            <ul>
+                {% for req in pending_requests %}
+                    <li>
+                        {{ req.user.full_name|default:req.user.email }}
+                        <small>({{ req.joined_at|date:"d.m.Y" }})</small>
+                        <form method="post" action="{% url 'clubs:manage_request' req.id 'approve' %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'clubs:manage_request' req.id 'reject' %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit">Reject</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pending requests.</p>
+        {% endif %}
+    {% endif %}
+
+    <h3>Members ({{ members|length }})</h3>
+    {% if members %}
+        <ul>
+            {% for m in members %}
+                <li>
+                    {{ m.user.full_name|default:m.user.email }}
+                    {% if m.user == club.president %}<small>(president)</small>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No members yet.</p>
+    {% endif %}
+{% endblock %}
