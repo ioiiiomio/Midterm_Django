@@ -1,29 +1,98 @@
-# This is a descriptive file for the Midterm Django 2026 project: KBTU CampusHUB
-## All information for the project's strucutre and team member's responsibilities will be described in this file.
-### **For developers: Any changes in project structure(updates, deletions, fixes) should be recorded in the README in according fields.**
+# KBTU CampusHub
 
-# Project tools
-## Package mamanger: [uv](https://github.com/astral-sh/uv)
+Midterm Django project 2026. Here is how to set up the project and how we work as a team.
 
-_**Installation**_
-Install uv with our standalone installers:
+If you change something in the project structure (new app, new setting, new package), please update this README.
 
-### On macOS and Linux.
+## Tools
+- Python 3.12 (3.9 doesn't work with Django 5)
+- [uv](https://github.com/astral-sh/uv) for venv and packages
+- [ruff](https://docs.astral.sh/ruff/) for linting
+
+Install uv:
+```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-### On Windows.
+```
+On Windows:
+```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-Or, from PyPI:
+```
 
-### With pip.
-pip install uv
-### Or pipx.
-pipx install uv
-If installed via the standalone installer, uv can update itself to the latest version:
+## How to run the project
 
-uv self update
-See the installation documentation for details and alternative installation methods.
+1. Clone the repo and switch to `dev`:
+```bash
+git clone <repo-url>
+cd Midterm_Django
+git checkout dev
+```
 
-## Linter: [ruff](https://pydevtools.com/handbook/how-to/how-to-configure-ruff-for-django/)
+2. Create venv and install packages:
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install -r requirements/dev.txt
+```
+(on Windows activate with `.venv\Scripts\activate`)
+
+3. Create `settings/.env` file:
+```
+CAMPUS_ENV_ID=local
+CAMPUS_SECRET_KEY=your-secret-key
+CAMPUS_ALLOWED_HOSTS=localhost,127.0.0.1
+```
+Don't push `.env` to GitHub!
+
+4. Run migrations and start the server:
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Don't run `django-admin startproject`, the project is already created.
 
 ## Project structure
-**_To start the project run: django-admin startproject settings ._**
+```
+apps/
+  abstracts/   base model with created_at and updated_at
+  users/       custom user
+  events/
+  clubs/
+  library/
+  tutoring/
+settings/
+  .env         secrets
+  conf.py      reads .env
+  base.py      main settings
+  env/
+    local.py   for development (SQLite)
+    prod.py    for production (PostgreSQL)
+requirements/
+  base.txt
+  dev.txt
+  prod.txt
+```
+
+## Team
+! Write your names in front of the project 
+
+| App | Who |
+|---|---|
+| users | <name> (team lead) |
+| events | <name> |
+| clubs | <name> |
+| library | <name> |
+| tutoring | <name> |
+
+## Rules
+- Don't push to `main` or `dev` directly. Make your own branch from `dev` and open a Pull Request.
+- Work only in your own app.
+- Only make migrations for your own app. Do `git pull` before `makemigrations`.
+- Inherit your models from `AbstractBaseModel`.
+- Use type hints and follow PEP8.
+- Before PR run:
+```bash
+ruff check .
+python manage.py check
+```
