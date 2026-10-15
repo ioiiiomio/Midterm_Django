@@ -38,6 +38,7 @@
 - ProfileForm
 - messages block in base.html
 - link to profile in navbar
+ - library app: role-based access (student/tutor/admin), owner-only edit/delete, protected downloads
 
 ### Fixed
 - base.html had wrong extension (.htm)
