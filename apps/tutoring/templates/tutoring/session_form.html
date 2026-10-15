@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Tutoring session | CampusHub{% endblock %}
+{% block title %}{% if object %}Edit session{% else %}New session{% endif %}{% endblock %}
 
 {% block content %}
-    <h1>{% if object %}Edit session{% else %}Add a session{% endif %}</h1>
-    {% if not form.fields.subject.queryset %}
-        <p>Add subjects to your <a href="{% url 'tutoring:profile_edit' %}">tutor profile</a> before scheduling a session.</p>
+    <h2>{% if object %}Edit session{% else %}New session{% endif %}</h2>
+
+    {% if not form.fields.subject.queryset.exists %}
+        <p><em>You have no subjects yet.
+            <a href="{% url 'tutoring:profile_edit' %}">Add subjects to your profile</a> first.</em></p>
     {% endif %}
+
     <form method="post">
         {% csrf_token %}
+        {{ form.non_field_errors }}
         {{ form.as_p }}
-        <button type="submit">Save session</button>
+        <button type="submit">Save</button>
+        <a href="{% url 'tutoring:my_schedule' %}">Cancel</a>
     </form>
-    <p><a href="{% url 'tutoring:my_schedule' %}">Back to schedule</a></p>
 {% endblock %}
