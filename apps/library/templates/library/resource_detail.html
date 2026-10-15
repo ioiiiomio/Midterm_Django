@@ -1,0 +1,24 @@
+{% extends "library/base.html" %}
+
+{% block content %}
+<h1>{{ resource.title }}</h1>
+
+<p><strong>Subject:</strong> {{ resource.subject }}</p>
+<p><strong>Type:</strong> {{ resource.get_resource_type_display }}</p>
+<p><strong>Uploaded by:</strong> {{ resource.uploader.full_name }}</p>
+<p><strong>Date:</strong> {{ resource.created_at|date:"Y-m-d H:i" }}</p>
+<p><strong>Description:</strong> {{ resource.description|default:"No description." }}</p>
+
+<p>
+  <a href="{% url 'library:resource_download' resource.pk %}">Download</a>
+</p>
+
+{% if user == resource.uploader %}
+  <p>
+    <a href="{% url 'library:resource_update' resource.pk %}">Edit</a>
+    <a href="{% url 'library:resource_delete' resource.pk %}">Delete</a>
+  </p>
+{% endif %}
+
+<p><a href="{% url 'library:resource_list' %}">Back to library</a></p>
+{% endblock %}
