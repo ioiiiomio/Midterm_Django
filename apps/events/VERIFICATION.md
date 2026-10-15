@@ -71,3 +71,13 @@ base instead. If your account lacks repository write access, ask the owner to
 invite you as a collaborator or push this branch to your fork and open a PR from it.
 
 See the final delivery note below for the actual push/PR outcome.
+
+
+## Actual delivery outcome
+
+- Implementation committed as `09ea9b8` on `feature/events`.
+- Branch pushed successfully to `origin/feature/events` with upstream tracking.
+- Draft PR created into `main`: https://github.com/ioiiiomio/Midterm_Django/pull/5
+- No force-push or merge was performed. No manual authentication step is needed.
+- All 18 changed/created files are listed in `DEFENSE.md`; teammates' application
+  files remain unchanged. The working tree was checked after delivery.
