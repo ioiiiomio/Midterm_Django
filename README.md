@@ -64,6 +64,8 @@ Pages that work now:
 - http://127.0.0.1:8000/tutoring/bookings/ - student bookings and eligible reviews
 - http://127.0.0.1:8000/admin/ - admin
 
+To load repeatable local tutoring demo data, run `python manage.py seed_tutoring`. The command prints demo account emails and their shared password; pass `--password` to choose another one. Demo accounts include an admin, three tutors, two students, available and nearly full sessions, a cancelled session, and a completed session with a review. Use these accounts only in local development.
+
 Note: don't run `django-admin startproject`, project is already created.
 
 ## Structure

@@ -7,6 +7,7 @@
 - role-checked tutor schedule and student booking workflows
 - capacity, duplicate booking, schedule conflict and review eligibility validation
 - tutoring admin configuration, templates, tests and initial migration
+- repeatable `seed_tutoring` command with local demo accounts and scenario data
 
 ## 1.4.0 - 15.10.2026
 ### Added
