@@ -103,12 +103,12 @@ class ValidatorTests(TestCase):
 
 class ListViewTests(LibraryTestCase):
     def test_list_page_opens(self) -> None:
-        response = self.client.get(reverse("library:resource_list"))
+        response = self.client.get(reverse("library:list"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Matrix notes")
 
     def test_search_by_title(self) -> None:
-        url = reverse("library:resource_list")
+        url = reverse("library:list")
         found = self.client.get(url, {"q": "matrix"})
         missing = self.client.get(url, {"q": "chemistry"})
         self.assertContains(found, "Matrix notes")
@@ -116,18 +116,18 @@ class ListViewTests(LibraryTestCase):
 
     def test_filter_by_subject(self) -> None:
         other_subject = Subject.objects.create(name="Physics")
-        url = reverse("library:resource_list")
+        url = reverse("library:list")
         response = self.client.get(url, {"subject": other_subject.pk})
         self.assertNotContains(response, "Matrix notes")
 
     def test_filter_by_type(self) -> None:
-        url = reverse("library:resource_list")
+        url = reverse("library:list")
         response = self.client.get(url, {"type": "textbook"})
         self.assertNotContains(response, "Matrix notes")
 
     def test_deleted_resource_is_hidden(self) -> None:
         self.resource.soft_delete()
-        response = self.client.get(reverse("library:resource_list"))
+        response = self.client.get(reverse("library:list"))
         self.assertNotContains(response, "Matrix notes")
 
 

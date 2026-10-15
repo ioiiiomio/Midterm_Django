@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>{{ page_title }}</h1>
@@ -7,6 +7,6 @@
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Save</button>
-  <a href="{% url 'library:resource_list' %}">Cancel</a>
+  <a href="{% url 'library:list' %}">Cancel</a>
 </form>
 {% endblock %}

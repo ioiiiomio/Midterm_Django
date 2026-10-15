@@ -1,4 +1,4 @@
-{% extends "library/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>{{ resource.title }}</h1>
@@ -20,5 +20,5 @@
   </p>
 {% endif %}
 
-<p><a href="{% url 'library:resource_list' %}">Back to library</a></p>
+<p><a href="{% url 'library:list' %}">Back to library</a></p>
 {% endblock %}
