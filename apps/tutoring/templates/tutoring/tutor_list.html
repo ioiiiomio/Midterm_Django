@@ -1,38 +1,53 @@
 {% extends "base.html" %}
 
-{% block title %}Find a tutor | CampusHub{% endblock %}
+{% block title %}Tutors{% endblock %}
 
 {% block content %}
-    <h1>Find a tutor</h1>
-    <form method="get">
-        <label for="q">Name or expertise</label>
-        <input id="q" type="search" name="q" value="{{ search_query }}">
-        <label for="subject">Subject</label>
-        <select id="subject" name="subject">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h2>Tutors</h2>
+        {% if user.is_authenticated %}
+            <span style="display:flex; gap:12px;">
+                {% if user.role == "tutor" %}
+                    <a href="{% url 'tutoring:my_schedule' %}">My schedule</a>
+                    <a href="{% url 'tutoring:profile_edit' %}">My tutor profile</a>
+                {% elif user.role == "student" %}
+                    <a href="{% url 'tutoring:my_bookings' %}">My bookings</a>
+                {% endif %}
+            </span>
+        {% endif %}
+    </div>
+
+    <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search tutors...">
+        <select name="subject">
             <option value="">All subjects</option>
             {% for subject in subjects %}
-                <option value="{{ subject.pk }}" {% if selected_subject == subject.pk|stringformat:"s" %}selected{% endif %}>{{ subject.name }}</option>
+                <option value="{{ subject.pk }}"
+                        {% if subject.pk|stringformat:"s" == selected_subject %}selected{% endif %}>
+                    {{ subject.name }}
+                </option>
             {% endfor %}
         </select>
         <button type="submit">Search</button>
-        <a href="{% url 'tutoring:tutor_list' %}">Clear</a>
+        {% if search_query or selected_subject %}
+            <a href="{% url 'tutoring:list' %}">Clear</a>
+        {% endif %}
     </form>
 
-    {% for tutor in tutors %}
-        <article>
-            <h2><a href="{% url 'tutoring:tutor_detail' tutor.pk %}">{{ tutor.user.full_name }}</a></h2>
-            <p>{{ tutor.headline }}</p>
-            <p>{{ tutor.hourly_rate }} / hour · {{ tutor.years_experience }} years' experience</p>
-            <p>{% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% empty %}No subjects listed{% endfor %}</p>
-        </article>
-    {% empty %}
-        <p>No tutors match those filters.</p>
-    {% endfor %}
-
-    {% if user.is_authenticated and user.role == "tutor" %}
-        <p><a href="{% url 'tutoring:profile_edit' %}">Edit tutor profile</a> · <a href="{% url 'tutoring:my_schedule' %}">Manage schedule</a></p>
-    {% endif %}
-    {% if user.is_authenticated and user.role == "student" %}
-        <p><a href="{% url 'tutoring:my_bookings' %}">My tutoring bookings</a></p>
+    {% if tutors %}
+        <div class="cards">
+            {% for tutor in tutors %}
+                <a class="card" href="{% url 'tutoring:tutor_detail' tutor.pk %}">
+                    <h3>{{ tutor.user.full_name|default:tutor.user.email }}</h3>
+                    <p>{{ tutor.headline }}</p>
+                    <p><small>
+                        {% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </small></p>
+                    <p><small>{{ tutor.hourly_rate }} / hour · {{ tutor.years_experience }} yrs experience</small></p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tutors found.</p>
     {% endif %}
 {% endblock %}

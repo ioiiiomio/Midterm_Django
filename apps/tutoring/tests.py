@@ -54,7 +54,7 @@ class TutoringTests(TestCase):
         self.client.force_login(user)
 
     def test_tutor_directory_searches_and_filters_by_subject(self) -> None:
-        response = self.client.get(reverse("tutoring:tutor_list"), {"subject": self.subject.pk})
+        response = self.client.get(reverse("tutoring:list"), {"subject": self.subject.pk})
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Math tutor")

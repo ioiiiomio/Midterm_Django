@@ -1,48 +1,80 @@
 {% extends "base.html" %}
 
-{% block title %}{{ tutor.user.full_name }} | CampusHub{% endblock %}
+{% block title %}{{ tutor.user.full_name|default:tutor.user.email }}{% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'tutoring:tutor_list' %}">All tutors</a></p>
-    <h1>{{ tutor.user.full_name }}</h1>
-    <h2>{{ tutor.headline }}</h2>
-    <p>{{ tutor.bio|linebreaksbr }}</p>
-    <p>{{ tutor.hourly_rate }} / hour · {{ tutor.years_experience }} years' experience</p>
-    <p>Subjects: {% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-    {% if average_rating %}<p>Average rating: {{ average_rating|floatformat:1 }} / 5</p>{% endif %}
+    <p><a href="{% url 'tutoring:list' %}">&larr; All tutors</a></p>
 
-    {% if user == tutor.user %}
-        <p><a href="{% url 'tutoring:profile_edit' %}">Edit profile</a> · <a href="{% url 'tutoring:my_schedule' %}">Manage schedule</a></p>
+    <h2>{{ tutor.user.full_name|default:tutor.user.email }}</h2>
+    <p><strong>{{ tutor.headline }}</strong></p>
+    <p>
+        <small>
+            {% for subject in tutor.subjects.all %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            · {{ tutor.hourly_rate }} / hour
+            · {{ tutor.years_experience }} yrs experience
+        </small>
+    </p>
+    {% if average_rating %}
+        <p>Rating: {{ average_rating|floatformat:1 }} / 5 ({{ reviews|length }} review{{ reviews|length|pluralize }})</p>
+    {% endif %}
+    {% if not tutor.is_available %}
+        <p><em>Not accepting bookings right now.</em></p>
     {% endif %}
 
-    <h2>Upcoming sessions</h2>
-    {% for session in sessions %}
-        <article>
-            <h3>{{ session.title }}</h3>
-            <p>{{ session.subject.name }} · {{ session.starts_at }} to {{ session.ends_at }}</p>
-            {% if session.location %}<p>{{ session.location }}</p>{% endif %}
-            {% if session.description %}<p>{{ session.description|linebreaksbr }}</p>{% endif %}
-            <p>{{ session.confirmed_booking_count }} / {{ session.capacity }} booked</p>
-            {% if user.is_authenticated and user.role == "student" %}
-                <form method="post" action="{% url 'tutoring:booking_create' session.pk %}">
-                    {% csrf_token %}
-                    <button type="submit">Book session</button>
-                </form>
-            {% elif not user.is_authenticated %}
-                <p><a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">Log in to book</a></p>
-            {% endif %}
-        </article>
-    {% empty %}
-        <p>No upcoming sessions are available.</p>
-    {% endfor %}
+    {% if tutor.bio %}
+        <p>{{ tutor.bio|linebreaksbr }}</p>
+    {% endif %}
 
-    <h2>Reviews</h2>
-    {% for review in reviews %}
-        <article>
-            <p>{{ review.rating }} / 5 · {{ review.booking.student.full_name }}</p>
-            <p>{{ review.comment|linebreaksbr }}</p>
-        </article>
-    {% empty %}
+    {% if user == tutor.user %}
+        <p>
+            <a href="{% url 'tutoring:profile_edit' %}">Edit my profile</a> ·
+            <a href="{% url 'tutoring:my_schedule' %}">My schedule</a>
+        </p>
+    {% endif %}
+
+    <h3>Upcoming sessions</h3>
+    {% if sessions %}
+        <ul>
+            {% for session in sessions %}
+                <li style="margin-bottom:12px;">
+                    <strong>{{ session.title }}</strong> ({{ session.subject.name }})<br>
+                    {{ session.starts_at|date:"d.m.Y H:i" }} – {{ session.ends_at|date:"H:i" }}
+                    {% if session.location %}· {{ session.location }}{% endif %}<br>
+                    <small>{{ session.confirmed_booking_count }} / {{ session.capacity }} seats taken</small>
+                    {% if session.description %}<br><small>{{ session.description }}</small>{% endif %}
+
+                    {% if user.is_authenticated and user.role == "student" %}
+                        {% if session.confirmed_booking_count < session.capacity and tutor.is_available %}
+                            <form method="post" action="{% url 'tutoring:booking_create' session.pk %}">
+                                {% csrf_token %}
+                                <button type="submit">Book</button>
+                            </form>
+                        {% else %}
+                            <br><em>Full</em>
+                        {% endif %}
+                    {% elif not user.is_authenticated %}
+                        <br><a href="{% url 'users:login' %}?next={{ request.path }}">Log in to book</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming sessions.</p>
+    {% endif %}
+
+    <h3>Reviews</h3>
+    {% if reviews %}
+        <ul>
+            {% for review in reviews %}
+                <li style="margin-bottom:8px;">
+                    <strong>{{ review.rating }}/5</strong>
+                    — {{ review.booking.student.full_name|default:review.booking.student.email }}
+                    <small>({{ review.booking.session.title }}, {{ review.created_at|date:"d.m.Y" }})</small>
+                    {% if review.comment %}<br>{{ review.comment }}{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
         <p>No reviews yet.</p>
-    {% endfor %}
+    {% endif %}
 {% endblock %}
