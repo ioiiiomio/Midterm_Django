@@ -8,7 +8,7 @@ class ClubForm(forms.ModelForm):
         model = Club
         fields = ["name", "description", "category", "logo"]
         help_texts = {
-            "name": "Name of the Club",
+           "name": "Name of the Club",
             "description": "Description of the Club",
             "category": "Category of the Club",
         }

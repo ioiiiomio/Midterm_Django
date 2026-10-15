@@ -145,3 +145,62 @@ def manage_request(request, membership_id, action):
 
     membership.save()
     return redirect("club_detail", pk=membership.club.pk)
+
+  return render(
+      request,
+      'clubs/club_form.html',
+      {'form': form, 'title': 'Edit Club', 'club': club},
+  )
+
+
+#Delete Club
+@login_required
+def club_delete(request, pk):
+  club = get_object_or_404(Club, pk=pk)
+  if request.user != club.president:
+    messages.error(
+        request, 'You do not have the authority to delete this club'
+    )
+    return redirect('club_detail', pk=club.pk)
+
+  if request.method == 'POST':
+    club.delete()
+    messages.success(request, 'Club deleted successfully')
+    return redirect('club_list')
+
+  return render(request, 'clubs/club_confirm_delete.html', {'club': club})
+
+
+#Join Request
+@login_required
+def join_request(request, pk):
+  club = get_object_or_404(Club, pk=pk)
+  membership, created = Membership.objects.get_or_create(
+      club=club, user=request.user
+  )
+  if created:
+    messages.success(request, 'Membership request submitted successfully!')
+  else:
+    messages.info(request, 'You have already requested or joined this club.')
+  return redirect('club_detail', pk=club.pk)
+
+
+#Manage Request
+@login_required
+def manage_request(request, membership_id, action):
+  membership = get_object_or_404(Membership, id=membership_id)
+  if request.user != membership.club.president:
+    messages.error(request, 'Permission denied')
+    return redirect('club_detail', pk=membership.club.pk)
+
+  if action == 'approve':
+    membership.status = 'approved'
+    messages.success(
+        request, f'User {membership.user} accepted to the club.'
+    )
+  elif action == 'reject':
+    membership.status = 'rejected'
+    messages.info(request, f'Request from {membership.user} rejected.')
+
+  membership.save()
+  return redirect('club_detail', pk=membership.club.pk)
