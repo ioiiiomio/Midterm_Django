@@ -1,5 +1,6 @@
 from decouple import Csv, config
 
+
 ENV_ID = config('CAMPUS_ENV_ID', cast=str)
 SECRET_KEY = config('CAMPUS_SECRET_KEY', cast=str)
 ALLOWED_HOSTS = config('CAMPUS_ALLOWED_HOSTS', cast=Csv(), default='')

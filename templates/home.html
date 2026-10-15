@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>KBTU CampusHub</h1>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.full_name }}!</p>
+    {% else %}
+        <p>Please log in or register.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+line-length = 100
+extend-exclude = ["**/migrations", ".venv"]
+
+[lint]
+select = ["E", "F", "W", "N", "I", "ANN"]
+ignore = ["ANN401"]
+
+[lint.isort]
+lines-after-imports = 2
+known-first-party = ["apps", "settings"]
+
+[lint.per-file-ignores]
+"settings/*" = ["F403", "F405"]
