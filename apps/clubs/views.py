@@ -153,7 +153,7 @@ def manage_request(request, membership_id, action):
   )
 
 
-#Delete Club
+# Delete Club
 @login_required
 def club_delete(request, pk):
   club = get_object_or_404(Club, pk=pk)
@@ -171,7 +171,7 @@ def club_delete(request, pk):
   return render(request, 'clubs/club_confirm_delete.html', {'club': club})
 
 
-#Join Request
+# Join Request
 @login_required
 def join_request(request, pk):
   club = get_object_or_404(Club, pk=pk)
@@ -185,7 +185,7 @@ def join_request(request, pk):
   return redirect('club_detail', pk=club.pk)
 
 
-#Manage Request
+# Manage Request
 @login_required
 def manage_request(request, membership_id, action):
   membership = get_object_or_404(Membership, id=membership_id)
