@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}My tutoring bookings | CampusHub{% endblock %}
+
+{% block content %}
+    <h1>My tutoring bookings</h1>
+    <p><a href="{% url 'tutoring:tutor_list' %}">Find a tutor</a></p>
+    {% for booking in bookings %}
+        <article>
+            <h2><a href="{% url 'tutoring:tutor_detail' booking.session.tutor_id %}">{{ booking.session.title }}</a></h2>
+            <p>{{ booking.session.subject.name }} with {{ booking.session.tutor.user.full_name }}</p>
+            <p>{{ booking.session.starts_at }} · {{ booking.get_status_display }}</p>
+            {% if booking.status == "confirmed" and booking.session.starts_at > now %}
+                <form method="post" action="{% url 'tutoring:booking_cancel' booking.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">Cancel booking</button>
+                </form>
+            {% elif booking.status == "confirmed" and booking.session.ends_at <= now and not booking.review %}
+                <a href="{% url 'tutoring:review_create' booking.pk %}">Write a review</a>
+            {% endif %}
+        </article>
+    {% empty %}
+        <p>You have no tutoring bookings.</p>
+    {% endfor %}
+{% endblock %}

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 1.5.0 - 15.10.2026
+### Added
+- tutoring profiles, subjects, schedule sessions, student bookings and reviews
+- tutor directory with subject and text search
+- role-checked tutor schedule and student booking workflows
+- capacity, duplicate booking, schedule conflict and review eligibility validation
+- tutoring admin configuration, templates, tests and initial migration
+
 ## 1.4.0 - 15.10.2026
 ### Added
 - profile page (`/users/profile/`) - shows name, email, role and join date
