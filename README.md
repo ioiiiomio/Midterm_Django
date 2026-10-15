@@ -128,7 +128,7 @@ urlpatterns = [
 
 And in `settings/urls.py`:
 ```python
-path("events/", include("apps.events.urls")),
+(path("events/", include("apps.events.urls")),)
 ```
 
 So the names must be exactly:
@@ -149,8 +149,7 @@ Your models should inherit from AbstractBaseModel:
 from apps.abstracts.models import AbstractBaseModel
 
 
-class Event(AbstractBaseModel):
-    ...
+class Event(AbstractBaseModel): ...
 ```
 
 If you need a link to user use `settings.AUTH_USER_MODEL`, not User directly:

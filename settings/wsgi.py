@@ -16,6 +16,6 @@ from settings.conf import ENV_ID
 
 assert ENV_ID, "CAMPUS_ENV_ID environment variable not set"
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'settings.env.{ENV_ID}')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"settings.env.{ENV_ID}")
 
 application = get_wsgi_application()

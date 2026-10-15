@@ -9,6 +9,7 @@ from django.views.generic import CreateView, TemplateView, UpdateView
 from apps.users.forms import ProfileForm, RegisterForm
 from apps.users.models import User
 
+
 class RegisterView(CreateView):
     """Registration page. After sign up the user is logged in."""
 
