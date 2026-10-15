@@ -1,73 +1,76 @@
 # KBTU CampusHub
 
-Midterm Django project 2026. Here is how to set up the project and how we work as a team.
+Our Django midterm project. Below is how to run it and some rules for the team.
 
-If you change something in the project structure (new app, new setting, new package), please update this README.
+If you change something in the project (new app, new setting, new package) - update this README and CHANGELOG pls.
 
-## Tools
-- Python 3.12 (3.9 doesn't work with Django 5)
-- [uv](https://github.com/astral-sh/uv) for venv and packages
-- [ruff](https://docs.astral.sh/ruff/) for linting
+## What we use
+- Python 3.12 (3.9 won't work with Django 5)
+- uv for venv and packages - https://github.com/astral-sh/uv
+- ruff for linting
 
 Install uv:
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-On Windows:
+Windows:
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-## How to run the project
+## How to run
 
-1. Clone the repo and switch to `dev`:
+Clone and go to dev branch:
 ```bash
 git clone <repo-url>
 cd Midterm_Django
 git checkout dev
 ```
 
-2. Create venv and install packages:
+Make venv and install packages:
 ```bash
 uv venv --python 3.12
 source .venv/bin/activate
 uv pip install -r requirements/dev.txt
 ```
-(on Windows activate with `.venv\Scripts\activate`)
+On Windows: `.venv\Scripts\activate`
 
-3. Create `settings/.env` file:
+Make sure `python --version` says 3.12. Also pick `.venv` as interpreter in PyCharm.
+
+Create `settings/.env`:
 ```
 CAMPUS_ENV_ID=local
 CAMPUS_SECRET_KEY=your-secret-key
 CAMPUS_ALLOWED_HOSTS=localhost,127.0.0.1
 ```
-Don't push `.env` to GitHub!
+Don't push .env to github!!
 
-4. Run migrations and start the server:
+Then:
 ```bash
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
+Go to http://127.0.0.1:8000/admin/ and login with your email (there is no username).
 
-Don't run `django-admin startproject`, the project is already created.
+Note: don't run `django-admin startproject`, project is already created.
 
-## Project structure
+## Structure
 ```
 apps/
-  abstracts/   base model with created_at and updated_at
-  users/       custom user
+  abstracts/   base model (created_at, updated_at, deleted_at)
+  users/       custom user, login by email, roles
   events/
   clubs/
   library/
   tutoring/
 settings/
-  .env         secrets
+  .env
   conf.py      reads .env
   base.py      main settings
   env/
-    local.py   for development (SQLite)
-    prod.py    for production (PostgreSQL)
+    local.py   sqlite, for us
+    prod.py    postgres
 requirements/
   base.txt
   dev.txt
@@ -75,7 +78,6 @@ requirements/
 ```
 
 ## Team
-! Write your names in front of the project 
 
 | App | Who |
 |---|---|
@@ -85,13 +87,34 @@ requirements/
 | library | <name> |
 | tutoring | <name> |
 
+## Notes for everyone
+
+Your models should inherit from AbstractBaseModel:
+```python
+from apps.abstracts.models import AbstractBaseModel
+
+
+class Event(AbstractBaseModel):
+    ...
+```
+
+If you need a link to user use `settings.AUTH_USER_MODEL`, not User directly:
+```python
+from django.conf import settings
+
+organizer = ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=CASCADE)
+```
+
+User roles are `student`, `tutor`, `admin`. Check like `user.role == User.Role.TUTOR`.
+
+`soft_delete()` doesn't really delete, it just sets deleted_at. So add `.filter(deleted_at__isnull=True)` when you show stuff.
+
 ## Rules
-- Don't push to `main` or `dev` directly. Make your own branch from `dev` and open a Pull Request.
-- Work only in your own app.
-- Only make migrations for your own app. Do `git pull` before `makemigrations`.
-- Inherit your models from `AbstractBaseModel`.
-- Use type hints and follow PEP8.
-- Before PR run:
+- don't push to main or dev, make your branch from dev and open PR
+- work only in your app
+- make migrations only for your app, and do `git pull` before `makemigrations`
+- type hints + PEP8
+- before PR run:
 ```bash
 ruff check .
 python manage.py check
