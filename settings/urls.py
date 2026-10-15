@@ -33,6 +33,7 @@ urlpatterns = [
     path("clubs/", include("apps.clubs.urls")),
     path("library/", include("apps.library.urls")),
 
+    path("events/", include("apps.events.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
